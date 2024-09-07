@@ -16,6 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -38,6 +39,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -88,12 +90,7 @@ fun NewsScreen(
 
         is DataState.Error -> {
             // Show error message
-            Text(
-                text = (state as DataState.Error).msg,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .wrapContentSize(Alignment.Center)
-            )
+            ErrorScreen()
         }
 
         else -> {
@@ -102,6 +99,42 @@ fun NewsScreen(
         }
     }
 }
+@Composable
+fun ErrorScreen(
+    viewModel: NewsViewModel = hiltViewModel()
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .align(Alignment.Center), // Center the Column in the Box
+            horizontalAlignment = Alignment.CenterHorizontally, // Center children horizontally
+            verticalArrangement = Arrangement.Center // Center children vertically
+        ) {
+            // Text at the top of the Column
+         Box{   Text(
+                text = "Check internet Connection",
+                color = Black,
+                style = TextStyle(
+                    fontSize = 10.ssp(),
+                    lineHeight = 16.ssp() // Adjust lineHeight as needed
+                ),
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .wrapContentWidth() // Only take as much width as needed
+                    .padding(bottom = 16.sdp()) // Space between text and button
+            )
+         }
+            // Button at the bottom of the Column
+            Button(onClick = {
+                viewModel.sendIntent(MainIntents.GetNews)
+            }) {
+                Text(text = "Reload")
+            }
+        }
+    }
+}
+
 
 @Composable
 fun NewsScreenContent(
@@ -129,7 +162,10 @@ fun NewsScreenContent(
             BeautifulList()
             Spacer(modifier = Modifier.height(8.sdp()))
             CategoryTitle(title = selectedCategory)
-            NewsList(viewModel.getCategorySelectedList(news, selectedCategory), navController)
+            NewsList(
+                viewModel.getCategorySelectedList(news, selectedCategory),
+                navController
+            )
         }
     }
 }
@@ -173,7 +209,7 @@ fun CategoryList(
             .fillMaxWidth()
             .background(color = Color.White)
     ) {
-        LazyRow{
+        LazyRow {
             items(categories.size) { index ->
                 ListItem(
                     title = categories[index],
@@ -196,32 +232,33 @@ fun ListItem(title: String, isSelected: Boolean, onClick: () -> Unit) {
         modifier = Modifier
             .background(color = Color.White)
     ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .padding(start = 4.sdp(), end = 4.sdp(), top = 2.sdp(), bottom = 2.sdp())
-            .background(color = Color.White)
-            .clickable(onClick = onClick)
-            .width(IntrinsicSize.Min) // Make the row as tall as its content
-    ) {
-        Text(
-            text = title,
-            style = TextStyle(
-                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                fontSize = 6.ssp(), color = FontColorGray
-            ),
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
+                .padding(start = 4.sdp(), end = 4.sdp(), top = 2.sdp(), bottom = 2.sdp())
                 .background(color = Color.White)
-                .wrapContentWidth()
-        )
-        Spacer(modifier = Modifier.height(1.sdp()))
+                .clickable(onClick = onClick)
+                .width(IntrinsicSize.Min) // Make the row as tall as its content
+        ) {
+            Text(
+                text = title,
+                style = TextStyle(
+                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                    fontSize = 6.ssp(), color = FontColorGray
+                ),
+                modifier = Modifier
+                    .background(color = Color.White)
+                    .wrapContentWidth()
+            )
+            Spacer(modifier = Modifier.height(1.sdp()))
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(1.sdp())
-                    .background(if (isSelected)Orange else Color.White)
+                    .background(if (isSelected) Orange else Color.White)
             )
-    }}
+        }
+    }
 }
 
 @Composable
@@ -273,7 +310,10 @@ fun BeautifulList() {
                         borderColor,
                         shape = CircleShape
                     ) // Apply border for non-current pages
-                    .background(color, shape = CircleShape) // Background only for current page
+                    .background(
+                        color,
+                        shape = CircleShape
+                    ) // Background only for current page
             )
         }
     }
