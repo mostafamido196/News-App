@@ -22,6 +22,8 @@ private val LightColorScheme = lightColorScheme(
     tertiary = Pink40
 
     */
+import androidx.compose.ui.tooling.preview.Preview
+
 /* Other default colors to override
     background = Color(0xFFFFFBFE),
     surface = Color(0xFFFFFBFE),

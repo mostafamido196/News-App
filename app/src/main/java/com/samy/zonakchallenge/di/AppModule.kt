@@ -1,7 +1,11 @@
 package com.samy.zonakchallenge.di
 
 import android.content.Context
+import android.util.Log
 import androidx.room.Room
+import com.google.gson.Gson
+import com.google.gson.JsonObject
+import com.google.gson.JsonSyntaxException
 import com.samy.zonakchallenge.data.local.AppDatabase
 import com.samy.zonakchallenge.data.local.NewsDao
 import com.samy.zonakchallenge.data.local.NewsLocalDataSource
@@ -31,13 +35,27 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providesHttpLoggingInterceptor(): HttpLoggingInterceptor {
-
-        val httpLoggingInterceptor = HttpLoggingInterceptor()
-        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
-        return httpLoggingInterceptor
+    fun providesHttpLoggingInterceptor() :HttpLoggingInterceptor{
+        return HttpLoggingInterceptor { message ->
+            // Optionally, you can detect JSON format to ensure it's deserializable
+            if (message.isNotEmpty() && message.startsWith("{") && message.endsWith("}")) {
+                Log.d("HTTP", "Full object: $message")
+                try {
+                    // Attempt to parse the response (assuming JSON and using Gson)
+                    val gson = Gson()
+                    val jsonObject = gson.fromJson(message, JsonObject::class.java)
+                    // Add specific checks if you expect certain fields in the response
+                    if (!jsonObject.has("expectedField")) {
+                        Log.e("HTTP", "Error: Expected field missing in the response")
+                    }
+                } catch (e: JsonSyntaxException) {
+                    Log.e("HTTP", "Error parsing response: ${e.localizedMessage}")
+                }
+            }
+        }.apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
     }
-
     @Provides
     @Singleton
     fun providesOkHttp(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClient =

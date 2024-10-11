@@ -112,7 +112,7 @@ fun ErrorScreen(
             verticalArrangement = Arrangement.Center // Center children vertically
         ) {
             // Text at the top of the Column
-         Box{   Text(
+            Box{   Text(
                 text = "Check internet Connection",
                 color = Black,
                 style = TextStyle(
@@ -124,7 +124,7 @@ fun ErrorScreen(
                     .wrapContentWidth() // Only take as much width as needed
                     .padding(bottom = 16.sdp()) // Space between text and button
             )
-         }
+            }
             // Button at the bottom of the Column
             Button(onClick = {
                 viewModel.sendIntent(MainIntents.GetNews)
@@ -602,7 +602,6 @@ fun ListItemSelectedCategory(
 
 
 }
-
 
 
 

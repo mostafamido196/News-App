@@ -6,7 +6,7 @@ plugins {
     id("com.google.dagger.hilt.android")
 
     //room + hilt
-    id("kotlin-kapt")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -99,22 +99,15 @@ dependencies {
 
     //room
     implementation(libs.androidx.room.runtime)
-    kapt(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
 
     // Dagger - Hilt
     implementation(libs.hilt.android)
-    kapt(libs.hilt.android.compiler)
+    ksp(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
     // to pass data between screens on Nav Graph
-//    implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
     implementation ("com.google.code.gson:gson:2.9.0")
 
-}
-
-//hilt + room
-kapt {
-    correctErrorTypes = true
-    useBuildCache = true
 }
